@@ -98,6 +98,8 @@ export default {
             this.router.push('/cashier/home');
           } else if (role === 'WAREHOUSE') {
             this.router.push('/warehouse/home');
+          } else if (role === 'INVENTORY') {
+            this.router.push('/inventory/home');
           } else {
             this.router.push('/');
           }
