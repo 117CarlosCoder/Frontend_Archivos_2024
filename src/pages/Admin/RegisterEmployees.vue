@@ -1,123 +1,3 @@
-<!-- <template>
-    <v-app>
-        <v-container class="d-flex flex-column align-center justify-center h-100" fluid>
-            <div class="translucent-background d-flex flex-column align-center justify-start w-100">
-                <div class=" d-flex flex-row align-start justify-space-between w-100">
-                    <h1>Client Register</h1>
-                    <Logout />
-                </div>
-                <form @submit.prevent="submit">
-                    <v-text-field v-model="name.value.value" :counter="10" :error-messages="name.errorMessage.value"
-                        label="Name"></v-text-field>
-
-                    <v-text-field v-model="phone.value.value" :counter="7" :error-messages="phone.errorMessage.value"
-                        label="Phone Number"></v-text-field>
-
-                    <v-text-field v-model="email.value.value" :error-messages="email.errorMessage.value"
-                        label="E-mail"></v-text-field>
-
-                    <v-select v-model="select.value.value" :error-messages="select.errorMessage.value" :items="items"
-                        label="Select"></v-select>
-
-                    <v-checkbox v-model="checkbox.value.value" :error-messages="checkbox.errorMessage.value"
-                        label="Option" type="checkbox" value="1"></v-checkbox>
-
-                    <v-btn class="me-4" type="submit">
-                        submit
-                    </v-btn>
-
-                    <v-btn @click="handleReset">
-                        clear
-                    </v-btn>
-                </form>
-            </div>
-        </v-container>
-    </v-app>
-</template>
-
-<script >
-  import { ref } from 'vue'
-  import { useField, useForm } from 'vee-validate'
-
-  const { handleSubmit, handleReset } = useForm({
-    validationSchema: {
-      name (value) {
-        if (value?.length >= 2) return true
-
-        return 'Name needs to be at least 2 characters.'
-      },
-      phone (value) {
-        if (value?.length > 9 && /[0-9-]+/.test(value)) return true
-
-        return 'Phone number needs to be at least 9 digits.'
-      },
-      email (value) {
-        if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
-
-        return 'Must be a valid e-mail.'
-      },
-      select (value) {
-        if (value) return true
-
-        return 'Select an item.'
-      },
-      checkbox (value) {
-        if (value === '1') return true
-
-        return 'Must be checked.'
-      },
-    },
-  })
-  const name = useField('name')
-  const phone = useField('phone')
-  const email = useField('email')
-  const select = useField('select')
-  const checkbox = useField('checkbox')
-
-  const items = ref([
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-  ])
-
-  const submit = handleSubmit(values => {
-    alert(JSON.stringify(values, null, 2))
-  });
-</script>
-
-<style scoped>
-body {
-    background-color: #000000;
-}
-
-.translucent-background {
-    width: 90%;
-    height: 90%;
-    background: linear-gradient(135deg,
-            rgba(0, 0, 0, 0.8),
-            rgba(229, 57, 53, 0.8));
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
-}
-
-h1,
-p {
-    color: #ffffff;
-}
-
-.v-btn {
-    background-color: #e53935;
-    border-radius: 8px;
-}
-
-.v-btn:hover {
-    background-color: #b71c1c;
-}
-</style> -->
-
-
 <template>
     <v-app>
       <v-container class="d-flex flex-column align-center justify-center h-100" fluid>
@@ -131,24 +11,35 @@ p {
           </div>
           <div class="background-register">
             <form @submit.prevent="submit">
-              <v-text-field v-model="nombre.value.value" :counter="100" :error-messages="nombre.errorMessage.value"
+              <v-text-field v-model="name.value.value" :counter="100" :error-messages="name.errorMessage.value"
                 label="Nombre"></v-text-field>
-  
-              <v-text-field v-model="numero.value.value" :counter="8" :error-messages="numero.errorMessage.value"
-                label="Numero de Telefono"></v-text-field>
-  
+
+              <v-text-field v-model="username.value.value" :counter="100" :error-messages="username.errorMessage.value"
+              label="Username"></v-text-field>  
+
               <v-text-field v-model="email.value.value" :error-messages="email.errorMessage.value"
                 label="Correo"></v-text-field>
   
+              <v-text-field v-if="showPasswordField" v-model="password.value.value" :counter="8" :error-messages="password.errorMessage.value"
+                label="Contraseña"></v-text-field>
+  
               <v-text-field v-model="nit.value.value" :error-messages="nit.errorMessage.value"
               label="Nit"></v-text-field>
+
+              <v-select
+              v-model="selectedRole"
+              :items="roles"
+              label="Selecciona un rol"
+              :error-messages="roleErrorMessage"
+              required
+            ></v-select>
   
               <v-btn class="btn-p me-4" type="submit" color="primay">
-                submit
+                Enviar
               </v-btn>
   
               <v-btn class="btn-d" @click="handleReset" coloer="danger">
-                clear
+                Limpiar
               </v-btn>
             </form>
           </div>
@@ -159,25 +50,40 @@ p {
     </v-app>
   </template>
   <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
+  import axios from 'axios';
   import { useField, useForm } from 'vee-validate'
+  import { useRouter } from 'vue-router';
   
+
+  const router = useRouter();
+
+  const selectedRole = ref(''); 
+  const roleErrorMessage = ref('');
+
+  const showPasswordField = computed(() => selectedRole.value !== 'CLIENT');
+
   const { handleSubmit, handleReset } = useForm({
     validationSchema: {
-      nombre(value) {
+      name(value) {
         if (value?.length >= 5) return true
   
         return 'Nombre necesita almenos 5 caracteres'
       },
-      numero(value) {
-        if (value?.length > 7 && /[0-9-]+/.test(value)) return true
+      username(value) {
+        if (value?.length >= 5) return true
   
-        return 'Numero de telefono necesita almenos 8 digitos.'
+        return 'Username necesita almenos 5 caracteres'
       },
       email(value) {
         if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
   
         return 'Correo Valido.'
+      },
+      password(value = '12345678') {
+        if (value?.length >= 8) return true
+  
+        return 'Constraseña necesita almenos 8 caracteres'
       },
       nit(value) {
         if (value?.length > 8 && /[0-9-]+/.test(value)) return true
@@ -186,13 +92,42 @@ p {
       },
     },
   })
-  const nombre = useField('nombre')
-  const numero = useField('numero')
+  const name = useField('name')
+  const username = useField('username')
+  const password = useField('password')
   const email = useField('email')
   const nit = useField('nit')
+
+  const roles = ['ADMIN', 'CLIENT', 'CASHIER', 'INVENTORY','WAREHOUSE']; 
+ 
+
+
+
   
-  const submit = handleSubmit(values => {
-    alert(JSON.stringify(values, null, 2))
+  const submit = handleSubmit(async values => {
+    if (!selectedRole.value) {
+      roleErrorMessage.value = 'El rol es obligatorio';
+      return;
+    }
+
+    values.role = selectedRole.value;
+
+    if (selectedRole.value === 'CLIENT') {
+       values.password ="";
+       console.log(values)
+    }
+
+    try {
+        const response = await axios.post('http://localhost:8080/admin/create-user', values);
+
+        if (response.status === 200) {
+          alert('El usuario se creo con exito');
+          router.push('/admin/home');
+        }
+      } catch (error) {
+        console.error('Error al crear usuario ', error);
+      }
+
   });
   
   const goBack = () => {
@@ -208,7 +143,7 @@ p {
   
   .translucent-background {
     width: 90%;
-    height: 90%;
+    height: 95%;
     background: linear-gradient(135deg,
         rgba(0, 0, 0, 0.8),
         rgba(229, 57, 53, 0.8));

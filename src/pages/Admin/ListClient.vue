@@ -25,18 +25,18 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Nit</th>
-                <th>Sucursal</th>
+                <th>Modificable</th>
                 <th>Editar</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(client, index) in clients" :key="index">
-                <td>{{ index+1 }}</td>
+                <td>{{ client.id}}</td>
                 <td>{{ client.username }}</td>
                 <td>{{ client.name }}</td>
                 <td>{{ client.email }}</td>
                 <td>{{ client.nit }}</td>
-                <td>{{ client.sucursal }}</td>
+                <td>{{ client.update }}</td>
                 <td style="display: flex; justify-content: flex-start; ">
                   <v-btn class="btn-d " style="margin-top: 0; margin-bottom: 20px;" @click="abrirEditor(client)" color="primary">
                     Editar
@@ -66,26 +66,21 @@ var valor = "";
 const router = useRouter();
 const clienteSeleccionado = ref(null); 
 
-
 const abrirEditor = (cliente) => {
+  cliente.password= "";
   const clienteString = JSON.stringify(cliente); 
   console.log('Cliente seleccionado para editar:', clienteSeleccionado.value);
 
   router.push({
-    name: 'updateClient',
+    name: 'edituser',
     params: { cliente: clienteString }
   });
 };
 
 
-
 onMounted(() => {
   fetchSearchClients();
 });
-
-const updateUser = async (query) => {
-
-}
 
 const fetchSearchClients = async (query) => {
   console.log("Query");
@@ -96,8 +91,8 @@ const fetchSearchClients = async (query) => {
     valor += query.data;
     console.log(valor)
     try {
-      const response = await axios.get('http://localhost:8080/cashier/find-clients', {
-        params: { nitPattern: valor },  // Usar directamente `query`
+      const response = await axios.get('http://localhost:8080/admin/find-users', {
+        params: { valor: valor },  
         withCredentials: true,
       });
       clients.value = response.data;
@@ -114,8 +109,8 @@ const fetchSearchClients = async (query) => {
       console.log("final");
       console.log(valor);
       try {
-        const response = await axios.get('http://localhost:8080/cashier/find-clients', {
-          params: { nitPattern: valor },  
+        const response = await axios.get('http://localhost:8080/admin/find-users', {
+          params: { valor: valor },  
           withCredentials: true,
         });
         clients.value = response.data;
@@ -125,8 +120,8 @@ const fetchSearchClients = async (query) => {
     } else {
       console.log("Vacio");
       try {
-        const response = await axios.get('http://localhost:8080/cashier/find-clients', {
-          params: { nitPattern: "" },  
+        const response = await axios.get('http://localhost:8080/admin/find-users', {
+          params: { valor: "" },  
           withCredentials: true,
         });
         clients.value = response.data;

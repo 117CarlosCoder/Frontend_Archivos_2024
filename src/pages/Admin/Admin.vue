@@ -60,7 +60,7 @@ export default {
 
         const editEmployee = async () => {
             try {
-                router.push('/admin/editemployee');
+                router.push('/admin/findusers');
             } catch (error) {
                 console.error('Error al editar trabajadores:', error);
                 // Manejar el error, mostrar un mensaje al usuario, etc.

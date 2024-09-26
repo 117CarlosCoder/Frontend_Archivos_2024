@@ -23,6 +23,7 @@ import Cashier from '@/pages/Cashier/Cashier.vue'
 import UpdateClient from '@/pages/Cashier/UpdateClient.vue'
 import ModalLogin from '@/pages/Cashier/ModalLogin.vue';
 import ClientShop from '@/pages/Cashier/ClientShop.vue'
+import ListClient from '@/pages/Admin/ListClient.vue'
 
 
 
@@ -57,11 +58,18 @@ const routes = [
       meta: { requiresAuth: true, role: 'ADMIN' }
     },
     {
-      path:"/admin/editemployee",
-      name:"edit",
+      path:"/admin/findusers",
+      name:"find",
+      component: ListClient,
+      meta: { requiresAuth: true, role: 'ADMIN' }
+    },
+    {
+      path:"/admin/editemployes:cliente",
+      name:"edituser",
       component: EditEmployees,
       meta: { requiresAuth: true, role: 'ADMIN' }
     },
+
     {
       path:"/admin/configcards",
       name:"configcards",
